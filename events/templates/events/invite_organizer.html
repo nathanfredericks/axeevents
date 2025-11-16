@@ -1,0 +1,36 @@
+{% extends 'base.html' %} {% block title %}Invite Co-Organizer - {{ event.title
+}}{% endblock %} {% block content %}
+<div class="container py-4" style="max-width: 700px">
+  <div class="card">
+    <div class="card-body p-4">
+      <h1 class="h2 fw-bold mb-4">Invite Co-Organizer</h1>
+
+      <form method="post" action="{% url 'invite_organizer' event.id %}">
+        {% csrf_token %}
+
+        <div class="mb-4">
+          <label for="phone_number" class="form-label fw-semibold">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            name="phone_number"
+            id="phone_number"
+            class="form-control"
+            required
+            aria-describedby="phone-number-help"
+          />
+        </div>
+
+        <div class="text-end">
+          <button type="submit" class="btn btn-primary py-2">
+            Send
+            <i class="fas fa-envelope ms-1"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

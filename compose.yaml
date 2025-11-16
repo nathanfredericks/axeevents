@@ -1,0 +1,94 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: axeevents-postgres
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-axeevents}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: axeevents-redis
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: axeevents
+    entrypoint: /usr/local/bin/docker-entrypoint-prod.sh
+    # entrypoint: /usr/local/bin/docker-entrypoint.sh
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      # - .:/app
+      # - /app/.venv
+      - media:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: axeevents-celery
+    command: uv run celery -A axeevents worker --loglevel=info --concurrency=4
+    env_file:
+      - .env
+    volumes:
+      - media:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    restart: always
+    user: axeevents
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: axeevents-celery-beat
+    command: uv run celery -A axeevents beat --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    restart: always
+    user: axeevents
+
+volumes:
+  postgres_data:
+  media:

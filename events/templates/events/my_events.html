@@ -1,0 +1,254 @@
+{% extends 'base.html' %} {% block title %}My Events - {{ PLATFORM_NAME }}{%
+endblock %} {% block content %}
+<section aria-labelledby="my-events-title">
+  <div class="mb-4">
+    <h1 class="h2 fw-bold mb-2" id="my-events-title">My Events</h1>
+    <p class="text-muted">Events you've RSVPed to and created.</p>
+  </div>
+
+  <ul
+    class="nav nav-tabs mb-4"
+    id="myEventsTabs"
+    role="tablist"
+    aria-label="My events views"
+  >
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link active"
+        id="rsvps-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#rsvps"
+        type="button"
+        role="tab"
+        aria-controls="rsvps"
+        aria-selected="true"
+      >
+        My RSVPs
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="created-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#created"
+        type="button"
+        role="tab"
+        aria-controls="created"
+        aria-selected="false"
+      >
+        Events I Created
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="myEventsTabContent">
+    <div class="tab-pane fade show active" id="rsvps" role="tabpanel">
+      <div class="mb-4">
+        <div class="btn-group" role="group">
+          <input
+            type="radio"
+            class="btn-check"
+            name="rsvps-subtab"
+            id="rsvps-upcoming"
+            autocomplete="off"
+            checked
+          />
+          <label
+            class="btn btn-outline-primary"
+            for="rsvps-upcoming"
+            onclick="showSubTab('rsvps', 'upcoming')"
+            >Upcoming</label
+          >
+
+          <input
+            type="radio"
+            class="btn-check"
+            name="rsvps-subtab"
+            id="rsvps-past"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-primary"
+            for="rsvps-past"
+            onclick="showSubTab('rsvps', 'past')"
+            >Past</label
+          >
+        </div>
+      </div>
+
+      <div id="subcontent-rsvps-upcoming" class="subtab-content">
+        {% if rsvps_upcoming_attending %}
+        <div class="mb-5">
+          <h2 class="h4 fw-bold mb-3 d-flex align-items-center">
+            <span
+              class="badge bg-success rounded-circle me-2"
+              style="width: 10px; height: 10px"
+            ></span>
+            Going
+          </h2>
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            {% for rsvp in rsvps_upcoming_attending %}
+            <div class="col">
+              {% include 'events/partials/event_card.html' with event=rsvp.event
+              rsvp=rsvp %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %} {% if rsvps_upcoming_maybe %}
+        <div class="mb-5">
+          <h2 class="h4 fw-bold mb-3 d-flex align-items-center">
+            <span
+              class="badge bg-warning rounded-circle me-2"
+              style="width: 10px; height: 10px"
+            ></span>
+            Maybe
+          </h2>
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            {% for rsvp in rsvps_upcoming_maybe %}
+            <div class="col">
+              {% include 'events/partials/event_card.html' with event=rsvp.event
+              rsvp=rsvp %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %} {% if rsvps_upcoming_not %}
+        <div class="mb-5">
+          <h2 class="h4 fw-bold mb-3 d-flex align-items-center">
+            <span
+              class="badge bg-danger rounded-circle me-2"
+              style="width: 10px; height: 10px"
+            ></span>
+            Can't Go
+          </h2>
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            {% for rsvp in rsvps_upcoming_not %}
+            <div class="col">
+              {% include 'events/partials/event_card.html' with event=rsvp.event
+              rsvp=rsvp %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %} {% if not rsvps_upcoming_attending and not
+        rsvps_upcoming_maybe and not rsvps_upcoming_not %} {% url 'index' as
+        discover_events_url %} {% include 'events/partials/empty_state.html'
+        with title="No Upcoming Events" description="You haven't RSVPed to any
+        upcoming events yet." action_url=discover_events_url
+        action_label="Browse Events" action_icon="fa-solid fa-compass" %} {%
+        endif %}
+      </div>
+
+      <div id="subcontent-rsvps-past" class="subtab-content d-none">
+        {% if rsvps_past %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+          {% for rsvp in rsvps_past %}
+          <div class="col">
+            {% include 'events/partials/event_card.html' with event=rsvp.event
+            rsvp=rsvp %}
+          </div>
+          {% endfor %}
+        </div>
+        {% else %} {% include 'events/partials/empty_state.html' with title="No
+        Past Events" description="You haven't attended any events." %} {% endif
+        %}
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="created" role="tabpanel">
+      <div class="mb-4">
+        <div class="btn-group" role="group">
+          <input
+            type="radio"
+            class="btn-check"
+            name="created-subtab"
+            id="created-upcoming"
+            autocomplete="off"
+            checked
+          />
+          <label
+            class="btn btn-outline-primary"
+            for="created-upcoming"
+            onclick="showSubTab('created', 'upcoming')"
+            >Upcoming</label
+          >
+
+          <input
+            type="radio"
+            class="btn-check"
+            name="created-subtab"
+            id="created-past"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-primary"
+            for="created-past"
+            onclick="showSubTab('created', 'past')"
+            >Past</label
+          >
+        </div>
+      </div>
+
+      <div id="subcontent-created-upcoming" class="subtab-content">
+        {% if created_upcoming %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+          {% for event in created_upcoming %}
+          <div class="col">
+            {% include 'events/partials/event_card.html' with event=event
+            is_organizer=True %}
+          </div>
+          {% endfor %}
+        </div>
+        {% else %} {% url 'create_event' as create_event_url %} {% include
+        'events/partials/empty_state.html' with title="No Upcoming Events"
+        description="You haven't created any upcoming events."
+        action_url=create_event_url action_label="Create Event"
+        action_icon="fa-solid fa-plus" %} {% endif %}
+      </div>
+
+      <div id="subcontent-created-past" class="subtab-content d-none">
+        {% if created_past %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+          {% for event in created_past %}
+          <div class="col">
+            {% include 'events/partials/event_card.html' with event=event
+            is_organizer=True %}
+          </div>
+          {% endfor %}
+        </div>
+        {% else %} {% include 'events/partials/empty_state.html' with title="No
+        Past Events" description="You haven't created any events yet." %} {%
+        endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function showSubTab(parentTab, subTab) {
+    const parent =
+      parentTab === "rsvps"
+        ? document.getElementById("rsvps")
+        : document.getElementById("created");
+    const contents = parent.querySelectorAll(".subtab-content");
+    contents.forEach((el) => el.classList.add("d-none"));
+
+    document
+      .getElementById("subcontent-" + parentTab + "-" + subTab)
+      .classList.remove("d-none");
+  }
+
+  document.querySelectorAll('[data-bs-toggle="tab"]').forEach((tab) => {
+    tab.addEventListener("shown.bs.tab", function (event) {
+      const target = event.target.getAttribute("data-bs-target");
+      if (target === "#rsvps") {
+        showSubTab("rsvps", "upcoming");
+      } else if (target === "#created") {
+        showSubTab("created", "upcoming");
+      }
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% with size_class=size|default:'' %}
+<span
+  class="user-avatar {% if size_class == 'sm' %}user-avatar-sm{% endif %} {{ extra_classes|default:'' }}"
+>
+  <i class="fa-solid fa-user" aria-hidden="true"></i>
+  {% if label %}
+  <span class="visually-hidden">{{ label }}</span>
+  {% endif %}
+</span>
+{% endwith %}

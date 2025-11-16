@@ -1,0 +1,62 @@
+{% load format_extras %}
+{% with text_tag=compact|yesno:'small,span' %}
+    {% with TextTag=text_tag %}
+        <div class="meta-row mb-2">
+                <i class="meta-icon fa-regular fa-calendar text-body" aria-hidden="true"></i>
+            <{{ TextTag }} class="px-2 text-muted">{% format_event_date event.event_state_date event.timezone %}</{{ TextTag }}>
+        </div>
+
+        <div class="meta-row mb-2">
+                <i class="meta-icon fa-regular fa-clock text-body" aria-hidden="true"></i>
+            <{{ TextTag }} class="px-2 text-muted">{% format_event_time event.event_state_date event.timezone %}</{{ TextTag }}>
+        </div>
+
+        {% with creator_name=primary_organizer_name|default:event.created_by.name additional_names=additional_organizer_names %}
+            {% if organizer_summary or additional_names or creator_name %}
+                <div class="meta-row mb-2">
+                        <i class="meta-icon fa-solid fa-user text-body" aria-hidden="true"></i>
+                    {% if organizer_summary %}
+                        <{{ TextTag }} class="px-2 text-muted">
+                            Organized by <strong>{{ organizer_summary }}</strong>
+                        </{{ TextTag }}>
+                    {% elif additional_names %}
+                        <{{ TextTag }} class="px 2text-muted">
+                            Organized by
+                            <strong>
+                                {% if creator_name %}
+                                    {{ creator_name }}
+                                {% endif %}
+                                {% for name in additional_names %}
+                                    {% if creator_name or not forloop.first %}, {% endif %}
+                                    {{ name }}
+                                {% endfor %}
+                            </strong>
+                        </{{ TextTag }}>
+                    {% elif creator_name %}
+                        <{{ TextTag }} class="px-2 text-muted">
+                            Organized by <strong>{{ creator_name }}</strong>
+                        </{{ TextTag }}>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="meta-row mb-2">
+            <i class="meta-icon fa-solid fa-location-dot text-body" aria-hidden="true"></i>
+            {% with loc_classes=location_classes|default:'text-muted' loc_style=location_style|default:'' %}
+                <{{ TextTag }} class="px-2 {{ loc_classes }}"{% if loc_style %} style="{{ loc_style }}"{% endif %}>
+                    {{ event.location }}
+                </{{ TextTag }}>
+            {% endwith %}
+        </div>
+
+        {% if show_attendee_count|default:True and not event.hide_attendee_count %}
+        <div class="meta-row mb-2">
+            <i class="meta-icon fa-solid fa-users text-body" aria-hidden="true"></i>
+            <{{ TextTag }} class="px-2 text-muted">
+                {{ event.attendee_count }}{% if event.max_attendees %} / {{ event.max_attendees }}{% endif %} going
+            </{{ TextTag }}>
+        </div>
+        {% endif %}
+    {% endwith %}
+{% endwith %}

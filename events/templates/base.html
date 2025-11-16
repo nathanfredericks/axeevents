@@ -1,0 +1,278 @@
+<!doctype html>
+{% load format_extras %}
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{{ PLATFORM_NAME }}{% endblock %}</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <style>
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1;
+      }
+
+      .card img {
+        object-fit: cover;
+        height: 250px;
+      }
+
+      .event-card {
+        position: relative;
+        cursor: pointer;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+        overflow: hidden;
+        padding: 0;
+      }
+
+      .event-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.08);
+      }
+
+      .event-card > .position-relative:first-of-type {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100%;
+      }
+
+      .event-card .card-img-top,
+      .event-card picture,
+      .event-card picture img {
+        width: 100% !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block;
+      }
+
+      .event-card .position-relative:first-of-type > div {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+      }
+
+      .htmx-indicator {
+        display: none;
+      }
+
+      .htmx-request .htmx-indicator,
+      .htmx-request.htmx-indicator {
+        display: inline-block;
+      }
+
+      #loading-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--bs-primary), #60a5fa);
+        z-index: 9999;
+        display: none;
+      }
+
+      .htmx-request #loading-bar {
+        display: block;
+        width: 70%;
+      }
+
+      .htmx-request.htmx-settling #loading-bar {
+        width: 100%;
+      }
+
+      .btn.htmx-request {
+        opacity: 0.7;
+        pointer-events: none;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: -999px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        z-index: 1000;
+        color: #0d6efd;
+        background-color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        box-shadow: 0 0 0 2px #0d6efd;
+      }
+
+      .skip-link:focus {
+        left: 1rem;
+        top: 1rem;
+        width: auto;
+        height: auto;
+        overflow: visible;
+      }
+
+      .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .meta-icon {
+        width: 1rem;
+        height: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .user-avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        background-color: var(--bs-secondary);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+      }
+
+      .user-avatar.user-avatar-sm {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.875rem;
+      }
+
+      .profile-menu-toggle {
+        border: none;
+        background-color: transparent;
+      }
+
+      .profile-menu-toggle .caret-icon-up {
+        display: none;
+      }
+
+      .profile-menu-toggle[aria-expanded="true"] .caret-icon-down {
+        display: none;
+      }
+
+      .profile-menu-toggle[aria-expanded="true"] .caret-icon-up {
+        display: inline-flex;
+      }
+
+      @media (max-width: 575.98px) {
+        .btn-create-event {
+          width: 2.5rem;
+          height: 2.5rem;
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <div id="loading-bar"></div>
+
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="container py-4 flex-grow-1 d-flex flex-column">
+      <header class="pb-3 mb-3 border-bottom">
+        {% include 'partials/navbar.html' %}
+      </header>
+
+      <main id="main-content" class="flex-grow-1" role="main" tabindex="-1">
+        {% include 'partials/messages.html' %} {% block content %}{% endblock %}
+      </main>
+
+      {% include 'partials/footer.html' %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("event-search");
+        if (searchInput) {
+          searchInput.value = "";
+        }
+      });
+    </script>
+
+    <script>
+      (function () {
+        const htmlElement = document.documentElement;
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        htmlElement.setAttribute(
+          "data-bs-theme",
+          prefersDark ? "dark" : "light",
+        );
+
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", (e) => {
+            htmlElement.setAttribute(
+              "data-bs-theme",
+              e.matches ? "dark" : "light",
+            );
+          });
+      })();
+    </script>
+
+    <script>
+      (function () {
+        try {
+          const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          const storedTimezone = sessionStorage.getItem("user_timezone");
+
+          if (userTimezone && userTimezone !== storedTimezone) {
+            fetch('{% url "set_user_timezone" %}', {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+              },
+              body: JSON.stringify({ timezone: userTimezone }),
+            })
+              .then((response) => {
+                if (response.ok) {
+                  sessionStorage.setItem("user_timezone", userTimezone);
+                }
+              })
+              .catch((err) => {
+                console.error("Failed to set timezone:", err);
+              });
+          }
+        } catch (err) {
+          console.error("Timezone detection failed:", err);
+        }
+      })();
+    </script>
+  </body>
+</html>

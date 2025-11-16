@@ -1,0 +1,47 @@
+<div
+  class="question-row border rounded-3 p-3 my-3 bg-body-tertiary text-body"
+  data-question-index="{{ row.index }}"
+>
+  <div class="d-flex justify-content-between align-items-start gap-3">
+    <div class="flex-grow-1">
+      <label for="question_text_{{ row.index }}" class="form-label"
+        >Question {{ row.index }}</label
+      >
+      <input
+        type="text"
+        class="form-control question-input"
+        id="question_text_{{ row.index }}"
+        name="question_text_{{ row.index }}"
+        value="{{ row.text }}"
+      />
+      <div class="form-check form-switch mt-2">
+        <input
+          type="checkbox"
+          class="form-check-input question-input"
+          id="question_required_{{ row.index }}"
+          name="question_required_{{ row.index }}"
+          {%
+          if
+          row.required
+          %}checked{%
+          endif
+          %}
+          data-question-required
+        />
+        <label class="form-check-label" for="question_required_{{ row.index }}"
+          >Required response</label
+        >
+      </div>
+    </div>
+    <button
+      type="button"
+      class="btn btn-danger"
+      hx-post="{% url 'question_row_remove' %}"
+      hx-target="closest .question-row"
+      hx-swap="outerHTML"
+      hx-include="[name=csrfmiddlewaretoken]"
+    >
+      <i class="fa-solid fa-trash" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>

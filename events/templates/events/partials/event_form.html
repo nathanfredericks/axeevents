@@ -1,0 +1,621 @@
+{% comment %} Shared event form for create/edit flows. Expects form_mode
+('create' or 'edit'), form_action (URL), submit_label, cancel_url, and optional
+cancel_label. Relies on existing context for question_rows, question_slots,
+timezones, default_timezone, unlimited_attendees, initial_photo_album_url, and
+event. {% endcomment %}
+<form method="post" action="{{ form_action }}" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label for="cover_photo" class="form-label fw-semibold">
+      Cover Photo
+    </label>
+    <input
+      type="file"
+      name="cover_photo"
+      id="cover_photo"
+      accept="image/*"
+      class="form-control"
+      {%
+      if
+      form_mode=""
+      ="create"
+      %}required{%
+      endif
+      %}
+    />
+    {% if form_mode == 'edit' %}
+    <div class="form-text">Leave blank to keep your current cover photo.</div>
+    {% endif %}
+  </div>
+
+  <div class="mb-3">
+    <label for="title" class="form-label fw-semibold">Title</label>
+    <input
+      type="text"
+      name="title"
+      id="title"
+      class="form-control"
+      value="{{ request.POST.title|default:event.title|default:'' }}"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="description" class="form-label fw-semibold">Description</label>
+    <textarea
+      name="description"
+      id="description"
+      rows="5"
+      class="form-control"
+      required
+    >
+{{ request.POST.description|default:event.description|default:'' }}</textarea
+    >
+  </div>
+
+  <div class="mb-3">
+    <label for="location" class="form-label fw-semibold">Location</label>
+    <input
+      type="text"
+      name="location"
+      id="location"
+      class="form-control"
+      value="{{ request.POST.location|default:event.location|default:'' }}"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="event_state_date" class="form-label fw-semibold"
+      >Start Date</label
+    >
+    <input
+      type="datetime-local"
+      name="event_state_date"
+      id="event_state_date"
+      class="form-control"
+      value="{% if request.POST.event_state_date %}{{ request.POST.event_state_date }}{% elif event.event_state_date %}{{ event.event_state_date|date:'Y-m-d\\TH:i' }}{% endif %}"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="event_end_date" class="form-label fw-semibold">End Date</label>
+    <input
+      type="datetime-local"
+      name="event_end_date"
+      id="event_end_date"
+      class="form-control"
+      value="{% if request.POST.event_end_date %}{{ request.POST.event_end_date }}{% elif event.event_end_date %}{{ event.event_end_date|date:'Y-m-d\\TH:i' }}{% endif %}"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="timezone" class="form-label fw-semibold">Timezone</label>
+    <select
+      name="timezone"
+      id="timezone"
+      class="form-select"
+      required
+      data-autofill-timezone="{{ detect_timezone_on_load|yesno:'true,false' }}"
+    >
+      {% with
+      selected_timezone=request.POST.timezone|default:event.timezone|default:default_timezone|default:'UTC'
+      %} {% for tz in timezones %}
+      <option
+        value="{{ tz.value }}"
+        {%
+        if
+        tz.value=""
+        ="selected_timezone"
+        %}selected{%
+        endif
+        %}
+      >
+        {{ tz.label }}
+      </option>
+      {% endfor %} {% endwith %}
+    </select>
+  </div>
+
+  {% if form_mode == 'edit' %}
+  <div class="mb-3">
+    <label for="photo_album_url" class="form-label fw-semibold"
+      >Photo Album Link</label
+    >
+    <input
+      type="url"
+      name="photo_album_url"
+      id="photo_album_url"
+      class="form-control"
+      value="{{ request.POST.photo_album_url|default:event_photo_album|default:initial_photo_album_url|default:'' }}"
+      placeholder="https://photos.app.goo.gl/..."
+    />
+    <div class="form-text">Share an album URL with photos from the event.</div>
+  </div>
+  {% endif %}
+
+  <div class="border rounded-3 p-3 mb-3">
+    <h2 class="h4 fw-bold mb-3">Attendance Settings</h2>
+    <div class="form-check form-switch mb-2">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="unlimited_attendees"
+        name="unlimited_attendees"
+        {%
+        if
+        unlimited_attendees
+        %}checked{%
+        endif
+        %}
+      />
+      <label class="form-check-label" for="unlimited_attendees"
+        >Unlimited attendees</label
+      >
+    </div>
+
+    <div
+      class="mb-3 {% if unlimited_attendees %}d-none{% endif %}"
+      id="max-attendees-wrapper"
+    >
+      <label for="max_attendees" class="form-label fw-semibold"
+        >Maximum Attendees</label
+      >
+      <input
+        type="number"
+        name="max_attendees"
+        id="max_attendees"
+        min="1"
+        class="form-control"
+        value="{{ request.POST.max_attendees|default:event.max_attendees|default:'' }}"
+      />
+    </div>
+
+    <div class="form-check form-switch mb-2">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="allow_rsvp"
+        name="allow_rsvp"
+        {%
+        if
+        request.POST
+        %}
+        {%
+        if
+        request.POST.allow_rsvp
+        %}checked{%
+        endif
+        %}
+        {%
+        else
+        %}
+        {%
+        if
+        event
+        %}
+        {%
+        if
+        event.allow_rsvp
+        %}checked{%
+        endif
+        %}
+        {%
+        else
+        %}
+        checked
+        {%
+        endif
+        %}
+        {%
+        endif
+        %}
+      />
+      <label class="form-check-label" for="allow_rsvp"
+        >Allow attendees to RSVP</label
+      >
+    </div>
+
+    <div class="form-check form-switch ms-3 mb-2">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="allow_maybe_rsvp"
+        name="allow_maybe_rsvp"
+        {%
+        if
+        request.POST
+        %}
+        {%
+        if
+        request.POST.allow_maybe_rsvp
+        %}checked{%
+        endif
+        %}
+        {%
+        else
+        %}
+        {%
+        if
+        event
+        %}
+        {%
+        if
+        event.allow_maybe_rsvp
+        %}checked{%
+        endif
+        %}
+        {%
+        else
+        %}
+        checked
+        {%
+        endif
+        %}
+        {%
+        endif
+        %}
+      />
+      <label class="form-check-label" for="allow_maybe_rsvp"
+        >Allow "Maybe" RSVP option</label
+      >
+    </div>
+
+    <div class="form-check mb-3">
+      <input
+        type="checkbox"
+        name="hide_attendee_count"
+        id="hide_attendee_count"
+        class="form-check-input"
+        {%
+        if
+        request.POST
+        %}
+        {%
+        if
+        request.POST.hide_attendee_count
+        %}checked{%
+        endif
+        %}
+        {%
+        elif
+        event
+        and
+        event.hide_attendee_count
+        %}
+        checked
+        {%
+        endif
+        %}
+      />
+      <label class="form-check-label" for="hide_attendee_count">
+        Hide attendee count from attendees
+      </label>
+    </div>
+
+    <div class="border rounded-3 p-3 bg-body-secondary text-body">
+      <div class="d-flex align-items-center justify-content-between gap-3">
+        <h3 class="h5 fw-semibold mb-0">Questionnaire</h3>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          id="add-question-btn"
+          hx-post="{% url 'question_row_add' %}"
+          hx-target="#questionnaire-rows"
+          hx-swap="beforeend"
+          hx-include="[name=csrfmiddlewaretoken], #questionnaire-rows .question-input"
+        >
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div
+        id="questionnaire-rows"
+        class="questionnaire-rows"
+        data-max="{{ question_slots }}"
+      >
+        {% for row in question_rows %} {% include
+        'events/partials/question_row.html' %} {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="border rounded-3 p-3 mb-4">
+    <h2 class="h4 fw-bold mb-3">Visibility and Notifications</h2>
+    <div class="form-check form-switch mb-2">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="is_listed"
+        name="is_listed"
+        {%
+        if
+        request.POST
+        %}
+        {%
+        if
+        request.POST.is_listed
+        %}checked{%
+        endif
+        %}
+        {%
+        else
+        %}
+        {%
+        if
+        event
+        %}
+        {%
+        if
+        event.is_listed
+        %}checked{%
+        endif
+        %}
+        {%
+        else
+        %}
+        checked
+        {%
+        endif
+        %}
+        {%
+        endif
+        %}
+      />
+      <label class="form-check-label" for="is_listed">
+        Show on discover page
+      </label>
+    </div>
+
+    <div class="form-check form-switch">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="auto_reminders_enabled"
+        name="auto_reminders_enabled"
+        {%
+        if
+        request.POST
+        %}
+        {%
+        if
+        request.POST.auto_reminders_enabled
+        %}checked{%
+        endif
+        %}
+        {%
+        elif
+        event
+        and
+        event.auto_reminders_enabled
+        %}
+        checked
+        {%
+        else
+        %}
+        {%
+        if
+        form_mode=""
+        ="create"
+        %}checked{%
+        endif
+        %}
+        {%
+        endif
+        %}
+      />
+      <label class="form-check-label" for="auto_reminders_enabled"
+        >Send automatic SMS reminders</label
+      >
+    </div>
+  </div>
+
+  <div class="d-flex flex-column flex-md-row justify-content-end gap-2">
+    {% if form_mode == 'edit' and is_creator %}
+    <button
+      type="submit"
+      class="btn btn-danger py-2 d-inline-flex align-items-center justify-content-center gap-2"
+      formaction="{% url 'delete_event' event.id %}"
+      formmethod="post"
+      formnovalidate
+      hx-on="click: if(!confirm('Are you sure you would like to delete this event?')) { event.preventDefault(); }"
+    >
+      <span>Delete</span>
+      <i class="fa-solid fa-trash text-white" aria-hidden="true"></i>
+    </button>
+    {% endif %}
+    <button
+      type="submit"
+      class="btn btn-primary py-2 d-inline-flex align-items-center justify-content-center gap-2"
+    >
+      <span>{{ submit_label }}</span>
+      {% if form_mode == 'create' %}
+      <i class="fa-solid fa-plus"></i>
+      {% else %}
+      <i class="fa-solid fa-pen-to-square"></i>
+      {% endif %}
+    </button>
+  </div>
+</form>
+
+<script>
+  (function () {
+    const formMode = "{{ form_mode }}";
+    const timezoneSelect = document.getElementById("timezone");
+    const shouldAutofillTimezone =
+      timezoneSelect && timezoneSelect.dataset.autofillTimezone === "true";
+
+    function applyBrowserTimezone() {
+      if (!timezoneSelect || !shouldAutofillTimezone) {
+        return;
+      }
+      try {
+        const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (!browserTz) {
+          return;
+        }
+        const optionMatch = Array.from(timezoneSelect.options || []).some(
+          (option) => option.value === browserTz,
+        );
+        if (optionMatch) {
+          timezoneSelect.value = browserTz;
+          timezoneSelect.dataset.autofillTimezone = "false";
+        }
+      } catch (error) {}
+    }
+
+    if (timezoneSelect) {
+      timezoneSelect.addEventListener("change", () => {
+        timezoneSelect.dataset.autofillTimezone = "false";
+      });
+    }
+
+    applyBrowserTimezone();
+
+    const allowRsvpCheckbox = document.getElementById("allow_rsvp");
+    const allowMaybeCheckbox = document.getElementById("allow_maybe_rsvp");
+    const questionRequiredSelector = "[data-question-required]";
+    const rowsContainer = document.getElementById("questionnaire-rows");
+    const addButton = document.getElementById("add-question-btn");
+    const emptyHint = document.getElementById("questionnaire-empty-hint");
+    const maxQuestions = rowsContainer
+      ? parseInt(rowsContainer.dataset.max, 10)
+      : 0;
+    const unlimitedToggle = document.getElementById("unlimited_attendees");
+    const maxWrapper = document.getElementById("max-attendees-wrapper");
+    const maxInput = document.getElementById("max_attendees");
+    const startDateInput = document.getElementById("event_state_date");
+    const endDateInput = document.getElementById("event_end_date");
+    let endDateManuallyEdited = false;
+
+    if (!allowRsvpCheckbox || !allowMaybeCheckbox) {
+      return;
+    }
+
+    function formatDateTimeLocal(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    function roundToNearest15Minutes(date) {
+      const minutes = date.getMinutes();
+      const rounded = Math.ceil(minutes / 15) * 15;
+      date.setMinutes(rounded);
+      date.setSeconds(0);
+      date.setMilliseconds(0);
+      return date;
+    }
+
+    function initializeDateTimes() {
+      if (formMode !== "create" || !startDateInput || !endDateInput) return;
+
+      if (!startDateInput.value) {
+        const now = roundToNearest15Minutes(new Date());
+        startDateInput.value = formatDateTimeLocal(now);
+      }
+
+      const startDate = new Date(startDateInput.value || new Date());
+      if (!endDateInput.value) {
+        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+        endDateInput.value = formatDateTimeLocal(endDate);
+        return;
+      }
+
+      const existingEnd = new Date(endDateInput.value);
+      if (isNaN(existingEnd.getTime()) || existingEnd <= startDate) {
+        const adjustedEnd = new Date(startDate.getTime() + 60 * 60 * 1000);
+        endDateInput.value = formatDateTimeLocal(adjustedEnd);
+      }
+    }
+
+    function updateEndDateFromStart() {
+      if (formMode !== "create") return;
+      if (!startDateInput.value || !endDateInput || endDateManuallyEdited)
+        return;
+
+      const startDate = new Date(startDateInput.value);
+      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+      endDateInput.value = formatDateTimeLocal(endDate);
+    }
+
+    if (formMode === "create" && startDateInput) {
+      startDateInput.addEventListener("change", updateEndDateFromStart);
+    }
+
+    if (formMode === "create" && endDateInput) {
+      endDateInput.addEventListener("change", function () {
+        endDateManuallyEdited = true;
+      });
+    }
+
+    initializeDateTimes();
+
+    function syncMaybeToggle() {
+      if (!allowRsvpCheckbox.checked) {
+        allowMaybeCheckbox.checked = false;
+        allowMaybeCheckbox.setAttribute("disabled", "disabled");
+      } else {
+        allowMaybeCheckbox.removeAttribute("disabled");
+      }
+    }
+
+    function syncQuestionToggles() {
+      const toggles = document.querySelectorAll(questionRequiredSelector);
+      toggles.forEach((toggle) => {
+        if (!allowRsvpCheckbox.checked) {
+          toggle.checked = false;
+          toggle.setAttribute("disabled", "disabled");
+        } else {
+          toggle.removeAttribute("disabled");
+        }
+      });
+    }
+
+    function updateQuestionUI() {
+      if (!rowsContainer || !addButton) {
+        return;
+      }
+      const rows = rowsContainer.querySelectorAll(".question-row");
+      addButton.disabled = rows.length >= maxQuestions;
+      if (emptyHint) {
+        emptyHint.classList.toggle("d-none", rows.length > 0);
+      }
+      syncQuestionToggles();
+    }
+
+    function syncCapacityToggle() {
+      if (!maxWrapper || !unlimitedToggle) return;
+      if (unlimitedToggle.checked) {
+        maxWrapper.classList.add("d-none");
+        if (maxInput) {
+          maxInput.value = "";
+        }
+      } else {
+        maxWrapper.classList.remove("d-none");
+      }
+    }
+
+    allowRsvpCheckbox.addEventListener("change", syncMaybeToggle);
+    allowRsvpCheckbox.addEventListener("change", syncQuestionToggles);
+    if (unlimitedToggle) {
+      unlimitedToggle.addEventListener("change", syncCapacityToggle);
+    }
+    document.addEventListener("htmx:afterSwap", function (event) {
+      if (event.target === rowsContainer) {
+        updateQuestionUI();
+      }
+    });
+    document.addEventListener("htmx:afterSettle", updateQuestionUI);
+    syncMaybeToggle();
+    syncQuestionToggles();
+    syncCapacityToggle();
+    updateQuestionUI();
+  })();
+</script>

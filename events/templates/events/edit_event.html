@@ -1,0 +1,15 @@
+{% extends 'base.html' %} {% block title %}Edit Event - {{ PLATFORM_NAME }}{%
+endblock %} {% block content %}
+<div class="container py-4" style="max-width: 700px">
+  <div class="card">
+    <div class="card-body p-4">
+      <h1 class="h2 fw-bold mb-4">Edit Event</h1>
+
+      {% url 'edit_event' event.id as edit_event_url %} {% url 'event_detail'
+      event.id as cancel_edit_event_url %} {% include
+      'events/partials/event_form.html' with form_action=edit_event_url
+      submit_label='Edit' cancel_url=cancel_edit_event_url form_mode='edit' %}
+    </div>
+  </div>
+</div>
+{% endblock %}

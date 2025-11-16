@@ -1,0 +1,64 @@
+{% if event.allow_rsvp and questionnaire %}
+<div
+  class="modal fade"
+  id="questionnaireModal"
+  tabindex="-1"
+  aria-labelledby="questionnaireModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="questionnaireModalLabel">
+          Please answer these questions
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="questionnaireForm">
+          {% for question in questionnaire %}
+          <div class="mb-3">
+            <label
+              for="modal_question_{{ question.id }}"
+              class="form-label fw-semibold"
+            >
+              {{ question.text }}{% if question.required %}<span
+                class="text-danger"
+                >*</span
+              >{% endif %}
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="modal_question_{{ question.id }}"
+              name="question_{{ question.id }}"
+              value="{{ question.answer }}"
+              {%
+              if
+              question.required
+              %}required{%
+              endif
+              %}
+            />
+          </div>
+          {% endfor %}
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-success"
+          onclick="submitQuestionnaire()"
+        >
+          Going <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

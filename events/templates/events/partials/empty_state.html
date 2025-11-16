@@ -1,0 +1,16 @@
+<div class="card text-center p-5">
+  <div class="card-body">
+    <i class="fa-solid fa-calendar-xmark fa-4x mb-4" aria-hidden="true"></i>
+    {% if title %}
+    <h3 class="h4 fw-bold mb-2">{{ title }}</h3>
+    {% endif %} {% if description %}
+    <p class="text-muted mb-4">{{ description }}</p>
+    {% endif %} {% if action_url and action_label %}
+    <a href="{{ action_url }}" class="btn btn-primary btn-lg px-4 py-2">
+      {% if action_icon %}
+      <i class="{{ action_icon }} me-2" aria-hidden="true"></i>
+      {% endif %} {{ action_label }}
+    </a>
+    {% endif %}
+  </div>
+</div>

@@ -1,0 +1,45 @@
+{% extends 'base.html' %} {% block title %}Discover - {{ PLATFORM_NAME }}{%
+endblock %} {% block content %}
+<div>
+  <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+    <div class="container-fluid py-5 px-0">
+      <h1 class="h2 fw-bold mb-3">Discover Nearby Events</h1>
+      <p class="col-lg-8 fs-4 mb-4">
+        Discover events by students, for students! RSVP with one click. Get text
+        updates. Share your photos.
+      </p>
+      {% if user_phone %}
+      <a href="{% url 'create_event' %}" class="btn btn-primary btn-lg">
+        Create Event
+        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+      </a>
+      {% else %}
+      <a href="{% url 'phone_login' %}" class="btn btn-primary btn-lg">
+        Get Started
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <div class="input-group input-group-lg">
+      <span class="input-group-text bg-body border-end-0">
+        <i class="fa fa-search"></i>
+      </span>
+      <input
+        type="text"
+        name="search"
+        id="event-search"
+        value="{{ search_query }}"
+        placeholder="Search for events"
+        class="form-control border-start-0 ps-0"
+        hx-get="{% url 'index' %}"
+        hx-trigger="keyup changed delay:300ms"
+        hx-target="#event-list"
+      />
+    </div>
+  </div>
+
+  <div id="event-list">{% include 'events/partials/event_list.html' %}</div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+<nav
+  class="d-flex flex-wrap align-items-center justify-content-between gap-3"
+  aria-label="Primary navigation"
+>
+  <a
+    href="{% url 'index' %}"
+    class="d-flex align-items-center text-decoration-none text-body"
+    aria-label="{{ PLATFORM_NAME }} home"
+  >
+    <i class="fa-solid fa-calendar-check fa-lg me-2" aria-hidden="true"></i>
+    <span class="fs-4 fw-medium mb-0">{{ PLATFORM_NAME }}</span>
+  </a>
+
+  <div
+    class="d-flex flex-wrap align-items-center justify-content-end gap-3"
+    role="group"
+    aria-label="Primary actions"
+  >
+    {% if user_phone %}
+    <a
+      class="text-body text-decoration-none d-inline-flex"
+      href="{% url 'my_events' %}"
+      >My Events</a
+    >
+    <a
+      class="btn btn-primary btn-create-event d-inline-flex align-items-center gap-2"
+      href="{% url 'create_event' %}"
+      aria-label="Create Event"
+    >
+      <span class="d-none d-sm-inline">Create Event</span>
+      <i class="fa-solid fa-plus" aria-hidden="true"></i>
+    </a>
+    <div class="dropdown d-inline-flex align-items-center">
+      <button
+        class="btn p-1 text-body d-flex align-items-center gap-2 profile-menu-toggle"
+        type="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+        aria-label="Open profile menu"
+      >
+        {% include 'partials/user_avatar.html' with size='sm'
+        extra_classes='m-0' label='Profile settings' %}
+        <i
+          class="fa-solid fa-caret-down fa-lg caret-icon caret-icon-down"
+          aria-hidden="true"
+        ></i>
+        <i
+          class="fa-solid fa-caret-up fa-lg caret-icon caret-icon-up"
+          aria-hidden="true"
+        ></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end mt-2">
+        <li>
+          <a class="dropdown-item" href="{% url 'edit_profile' %}">Profile</a>
+        </li>
+        <li>
+          <a class="dropdown-item text-danger" href="{% url 'logout' %}"
+            >Logout</a
+          >
+        </li>
+      </ul>
+    </div>
+    {% else %}
+    <a
+      class="btn btn-primary d-inline-flex align-items-center gap-2"
+      href="{% url 'phone_login' %}"
+    >
+      <span>Login</span>
+      <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
+    </a>
+    {% endif %}
+  </div>
+</nav>

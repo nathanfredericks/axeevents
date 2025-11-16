@@ -1,0 +1,43 @@
+{% extends 'base.html' %} {% load format_extras %} {% block title %}Verify New
+Phone - {{ PLATFORM_NAME }}{% endblock %} {% block content %}
+<div class="container py-4" style="max-width: 500px">
+  <div class="card">
+    <div class="card-body p-4">
+      <h1 class="h2 fw-bold mb-2">Verify New Phone Number</h1>
+      <p class="text-muted mb-4">
+        Enter the verification code sent to {{ phone_number|format_phone }}.
+      </p>
+
+      <form method="post" action="{% url 'verify_phone_change' %}">
+        {% csrf_token %}
+        <div class="mb-4">
+          <label for="code" class="form-label fw-semibold"
+            >Verification Code</label
+          >
+          <input
+            type="text"
+            name="code"
+            id="code"
+            placeholder="123456"
+            maxlength="6"
+            class="form-control form-control-lg text-center fs-3"
+            style="letter-spacing: 0.5em"
+            required
+            autofocus
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2">
+          Verify & Update Phone
+        </button>
+      </form>
+
+      <div class="mt-4 text-center">
+        <a href="{% url 'edit_profile' %}" class="text-decoration-none small">
+          Cancel and go back to profile
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

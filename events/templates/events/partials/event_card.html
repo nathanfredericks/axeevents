@@ -1,0 +1,85 @@
+<article
+  class="card h-100 event-card"
+  aria-labelledby="event-card-{{ event.id }}-title"
+>
+  <a
+    href="{% url 'event_detail' event.id %}"
+    class="stretched-link"
+    aria-label="View details for {{ event.title }}"
+  ></a>
+
+  <div class="position-relative">
+    {% if event.cover_photo_processing_status == 'pending' or
+    event.cover_photo_processing_status == 'processing' %}
+
+    <div
+      class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+      style="height: 250px"
+    >
+      <div class="text-center">
+        <div class="spinner-border text-white mb-2" role="status">
+          <span class="visually-hidden">Processing...</span>
+        </div>
+      </div>
+    </div>
+    {% elif event.cover_photo_avif_url or event.cover_photo_webp_url or
+    event.cover_photo %}
+
+    <picture>
+      {% if event.cover_photo_avif_url %}
+      <source srcset="{{ event.cover_photo_avif_url }}" type="image/avif" />
+      {% endif %} {% if event.cover_photo_webp_url %}
+      <source srcset="{{ event.cover_photo_webp_url }}" type="image/webp" />
+      {% endif %} {% if event.cover_photo %}
+      <img
+        src="{{ event.cover_photo.url }}"
+        class="card-img-top"
+        alt="{{ event.title }}"
+      />
+      {% elif event.cover_photo_webp_url %}
+      <img
+        src="{{ event.cover_photo_webp_url }}"
+        class="card-img-top"
+        alt="{{ event.title }}"
+      />
+      {% else %}
+      <img
+        src="{{ event.cover_photo_avif_url }}"
+        class="card-img-top"
+        alt="{{ event.title }}"
+      />
+      {% endif %}
+    </picture>
+    {% else %}
+
+    <div
+      class="card-img-top bg-primary d-flex align-items-center justify-content-center"
+      style="height: 250px"
+    >
+      <i
+        class="fa-regular fa-image text-body opacity-50"
+        style="font-size: 4rem"
+      ></i>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card-body">
+    <h5 class="card-title fw-bold mb-3" id="event-card-{{ event.id }}-title">
+      <a
+        href="{% url 'event_detail' event.id %}"
+        class="stretched-link text-decoration-none text-reset"
+        >{{ event.title }}</a
+      >
+    </h5>
+    {% with organizer_name=event.created_by.name location_classes='text-muted
+    text-truncate d-inline-block' %} {% if organizer_name %} {% include
+    'events/partials/event_meta_list.html' with event=event
+    organizer_summary=organizer_name primary_organizer_name=organizer_name
+    compact=True location_classes=location_classes location_style=location_style
+    %} {% else %} {% include 'events/partials/event_meta_list.html' with
+    event=event primary_organizer_name=organizer_name compact=True
+    location_classes=location_classes location_style=location_style %} {% endif
+    %} {% endwith %}
+  </div>
+</article>
