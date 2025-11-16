@@ -43,8 +43,7 @@
                   checked
                 />
                 <label class="form-check-label" for="attending">
-                  Going ({{ attending_count }} attendee{{
-                  attending_count|pluralize }})
+                  Going ({{ attending_count }} attendee{{ attending_count|pluralize:"s" }})
                 </label>
               </div>
               <div class="form-check border rounded p-3">
@@ -56,7 +55,7 @@
                   class="form-check-input"
                 />
                 <label class="form-check-label" for="maybe">
-                  Maybe ({{ maybe_count }} attendee{{ maybe_count|pluralize }})
+                  Maybe ({{ maybe_count }} attendee{{ maybe_count|pluralize:"s" }})
                 </label>
               </div>
               <div class="form-check border rounded p-3">
@@ -68,8 +67,7 @@
                   class="form-check-input"
                 />
                 <label class="form-check-label" for="both">
-                  Both Going & Maybe ({{ attending_count|add:maybe_count }}
-                  attendee{{ attending_count|add:maybe_count|pluralize }})
+                  Both Going & Maybe ({{ attending_count|add:maybe_count }} attendee{{ attending_count|add:maybe_count|pluralize:"s" }})
                 </label>
               </div>
             </div>
@@ -130,6 +128,7 @@
             <button
               type="submit"
               class="btn btn-primary d-flex align-items-center gap-2"
+              title="Send this text blast"
             >
               <span>Send</span>
               <i class="fa-solid fa-paper-plane"></i>
@@ -146,13 +145,11 @@
     const textarea = document.getElementById("message");
     const charCount = document.getElementById("charCount");
     const preview = document.getElementById("preview");
-    const messageError = document.getElementById("messageError");
     const eventTitle = "{{ event.title|escapejs }}";
 
     charCount.textContent = `${textarea.value.length} / 300`;
 
     if (textarea.value.trim()) {
-      messageError.style.display = "none";
       textarea.classList.remove("is-invalid");
       preview.textContent = `[${eventTitle}] ${textarea.value}`;
     } else {
@@ -162,10 +159,8 @@
 
   function validateForm() {
     const textarea = document.getElementById("message");
-    const messageError = document.getElementById("messageError");
 
     if (!textarea.value.trim()) {
-      messageError.style.display = "block";
       textarea.classList.add("is-invalid");
       textarea.focus();
       return false;

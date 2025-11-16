@@ -10,7 +10,7 @@
 
       {% url 'edit_event' event.id as edit_event_url %}
       {% url 'event_detail' event.id as cancel_edit_event_url %}
-      {% include 'events/partials/event_form.html' with form_action=edit_event_url submit_label='Edit' cancel_url=cancel_edit_event_url form_mode='edit' %}
+      {% include 'events/partials/event_form.html' with form_action=edit_event_url submit_label='Edit' cancel_url=cancel_edit_event_url form_mode='edit' is_past_event=is_past_event %}
     </div>
   </div>
 </div>

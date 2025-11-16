@@ -218,6 +218,23 @@ def parse_and_validate_event_state_date(date_str, event_timezone="UTC"):
         raise ValueError("Invalid event date")
 
 
+def format_event_datetime_for_form(dt, timezone_name):
+    if not dt:
+        return ""
+
+    tz_name = timezone_name or "UTC"
+    try:
+        target_tz = pytz.timezone(tz_name)
+    except pytz.UnknownTimeZoneError:
+        target_tz = pytz.UTC
+
+    if timezone.is_naive(dt):
+        dt = timezone.make_aware(dt, pytz.UTC)
+
+    localized_dt = timezone.localtime(dt, target_tz)
+    return localized_dt.strftime("%Y-%m-%dT%H:%M")
+
+
 def validate_max_attendees(unlimited_attendees, post_data):
     if unlimited_attendees:
         return None
@@ -592,6 +609,12 @@ def rsvp_event(request, event_id):
     user = get_object_or_404(User, phone_number=user_phone)
     status = request.POST.get("status", "attending")
 
+    if event.is_past:
+        messages.error(
+            request, "This event has already passed. RSVPs are no longer available."
+        )
+        return _rsvp_response(request, event)
+
     if event.created_by == user:
         return _rsvp_response(request, event)
 
@@ -713,6 +736,7 @@ def create_event(request):
     )
 
     def render_create(extra_context=None):
+        event_defaults = EventFormDefaults()
         context = {
             "question_rows": active_question_rows,
             "question_slots": QUESTION_SLOTS,
@@ -720,7 +744,13 @@ def create_event(request):
             "initial_photo_album_url": photo_album_prefill,
             "timezones": get_common_timezones(),
             "default_timezone": get_timezone_from_ip(request),
-            "event": EventFormDefaults(),
+            "event": event_defaults,
+            "event_state_date_form_value": format_event_datetime_for_form(
+                event_defaults.event_state_date, event_defaults.timezone
+            ),
+            "event_end_date_form_value": format_event_datetime_for_form(
+                event_defaults.event_end_date, event_defaults.timezone
+            ),
             "detect_timezone_on_load": False,
             "event_photo_album": "",
         }
@@ -830,6 +860,8 @@ def edit_event(request, event_id):
         messages.error(request, "Only organizers can edit this event.")
         return redirect("event_detail", event_id=event_id)
 
+    is_past_event = event.is_past
+
     raw_question_rows = _build_question_form_rows(
         event=event,
         post_data=request.POST if request.method == "POST" else None,
@@ -846,11 +878,18 @@ def edit_event(request, event_id):
             "event": event,
             "user_phone": user_phone,
             "is_creator": event.created_by_id == user.id,
+            "is_past_event": is_past_event,
             "question_rows": question_rows,
             "question_slots": QUESTION_SLOTS,
             "unlimited_attendees": unlimited_attendees,
             "timezones": get_common_timezones(),
             "default_timezone": event.timezone,
+            "event_state_date_form_value": format_event_datetime_for_form(
+                event.event_state_date, event.timezone
+            ),
+            "event_end_date_form_value": format_event_datetime_for_form(
+                event.event_end_date, event.timezone
+            ),
             "detect_timezone_on_load": False,
             "event_photo_album": event.photo_album_url,
             "initial_photo_album_url": event.photo_album_url,
@@ -860,6 +899,17 @@ def edit_event(request, event_id):
         return render(request, "events/edit_event.html", context)
 
     if request.method == "POST":
+        # For past events, only allow updating photo_album_url
+        if is_past_event:
+            photo_album_url = request.POST.get("photo_album_url", "").strip()
+            event.photo_album_url = photo_album_url
+            event.save()
+            logger.info(
+                f"Photo album URL updated for past event '{event.title}' (ID: {event.id}) by user {user.phone_number}"
+            )
+            messages.success(request, "You've updated the photo album link!")
+            return redirect("event_detail", event_id=event.id)
+
         event_state_date_str = request.POST.get("event_state_date")
         event_end_date_str = request.POST.get("event_end_date")
         event_timezone = request.POST.get("timezone", "UTC")

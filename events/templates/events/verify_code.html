@@ -50,7 +50,11 @@
         </div>
         {% endif %}
 
-        <button type="submit" class="btn btn-lg btn-primary w-100 py-2">
+        <button
+          type="submit"
+          class="btn btn-lg btn-primary w-100 py-2"
+          title="Submit verification code"
+        >
           Login
           <i class="fa fa-right-to-bracket ms-2" aria-hidden="true"></i>
         </button>
@@ -65,7 +69,11 @@
         hx-indicator="#resend-code-indicator"
       >
         {% csrf_token %}
-        <button type="submit" class="btn btn-link text-decoration-none">
+        <button
+          type="submit"
+          class="btn btn-link text-decoration-none"
+          title="Request a new verification code"
+        >
           Resend code
           <span
             id="resend-code-indicator"

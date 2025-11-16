@@ -5,7 +5,14 @@
     role="alert"
   >
     {{ message }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Dismiss alert"
+      title="Dismiss alert"
+    ></button>
   </div>
-  {% endfor %} {% endif %}
+  {% endfor %}
+  {% endif %}
 </div>

@@ -115,7 +115,8 @@
               <th>Phone Number</th>
               {% if questions %} {% for question in questions %}
               <th>{{ question.text }}</th>
-              {% endfor %} {% endif %}
+              {% endfor %}
+              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -127,7 +128,8 @@
               </td>
               {% if questions %} {% for answer in rsvp.answer_list %}
               <td>{{ answer|default:"—" }}</td>
-              {% endfor %} {% endif %}
+              {% endfor %}
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>
@@ -152,7 +154,8 @@
               <th>Phone Number</th>
               {% if questions %} {% for question in questions %}
               <th>{{ question.text }}</th>
-              {% endfor %} {% endif %}
+              {% endfor %}
+              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -164,7 +167,8 @@
               </td>
               {% if questions %} {% for answer in rsvp.answer_list %}
               <td>{{ answer|default:"—" }}</td>
-              {% endfor %} {% endif %}
+              {% endfor %}
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>
@@ -189,7 +193,8 @@
               <th>Phone Number</th>
               {% if questions %} {% for question in questions %}
               <th>{{ question.text }}</th>
-              {% endfor %} {% endif %}
+              {% endfor %}
+              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -201,7 +206,8 @@
               </td>
               {% if questions %} {% for answer in rsvp.answer_list %}
               <td>{{ answer|default:"—" }}</td>
-              {% endfor %} {% endif %}
+              {% endfor %}
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>

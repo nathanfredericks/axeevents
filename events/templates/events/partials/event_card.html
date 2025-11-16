@@ -9,8 +9,7 @@
   ></a>
 
   <div class="position-relative">
-    {% if event.cover_photo_processing_status == 'pending' or
-    event.cover_photo_processing_status == 'processing' %}
+    {% if event.cover_photo_processing_status == 'pending' or event.cover_photo_processing_status == 'processing' %}
 
     <div
       class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
@@ -22,15 +21,16 @@
         </div>
       </div>
     </div>
-    {% elif event.cover_photo_avif_url or event.cover_photo_webp_url or
-    event.cover_photo %}
+    {% elif event.cover_photo_avif_url or event.cover_photo_webp_url or event.cover_photo %}
 
     <picture>
       {% if event.cover_photo_avif_url %}
       <source srcset="{{ event.cover_photo_avif_url }}" type="image/avif" />
-      {% endif %} {% if event.cover_photo_webp_url %}
+      {% endif %}
+      {% if event.cover_photo_webp_url %}
       <source srcset="{{ event.cover_photo_webp_url }}" type="image/webp" />
-      {% endif %} {% if event.cover_photo %}
+      {% endif %}
+      {% if event.cover_photo %}
       <img
         src="{{ event.cover_photo.url }}"
         class="card-img-top"
