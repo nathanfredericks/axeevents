@@ -134,6 +134,12 @@ PHONENUMBER_DEFAULT_REGION = "US"
 
 SITE_DOMAIN = os.getenv("SITE_DOMAIN", "localhost:8000")
 
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{domain.strip()}"
+    for domain in os.getenv("ALLOWED_HOSTS", "").split(",")
+    if domain.strip() and domain.strip() not in ["localhost", "127.0.0.1"]
+]
+
 ALLOWED_EVENT_CREATOR_IDS = os.getenv("ALLOWED_EVENT_CREATOR_IDS", "")
 
 
