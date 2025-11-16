@@ -93,8 +93,7 @@
           <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
             {% for rsvp in rsvps_upcoming_attending %}
             <div class="col">
-              {% include 'events/partials/event_card.html' with event=rsvp.event
-              rsvp=rsvp %}
+              {% include 'events/partials/event_card.html' with event=rsvp.event rsvp=rsvp %}
             </div>
             {% endfor %}
           </div>
@@ -111,8 +110,7 @@
           <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
             {% for rsvp in rsvps_upcoming_maybe %}
             <div class="col">
-              {% include 'events/partials/event_card.html' with event=rsvp.event
-              rsvp=rsvp %}
+              {% include 'events/partials/event_card.html' with event=rsvp.event rsvp=rsvp %}
             </div>
             {% endfor %}
           </div>
@@ -129,19 +127,16 @@
           <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
             {% for rsvp in rsvps_upcoming_not %}
             <div class="col">
-              {% include 'events/partials/event_card.html' with event=rsvp.event
-              rsvp=rsvp %}
+              {% include 'events/partials/event_card.html' with event=rsvp.event rsvp=rsvp %}
             </div>
             {% endfor %}
           </div>
         </div>
-        {% endif %} {% if not rsvps_upcoming_attending and not
-        rsvps_upcoming_maybe and not rsvps_upcoming_not %} {% url 'index' as
-        discover_events_url %} {% include 'events/partials/empty_state.html'
-        with title="No Upcoming Events" description="You haven't RSVPed to any
-        upcoming events yet." action_url=discover_events_url
-        action_label="Browse Events" action_icon="fa-solid fa-compass" %} {%
-        endif %}
+        {% endif %}
+        {% if not rsvps_upcoming_attending and not rsvps_upcoming_maybe and not rsvps_upcoming_not %}
+          {% url 'index' as discover_events_url %}
+          {% include 'events/partials/empty_state.html' with title="No Upcoming Events" description="You haven't RSVPed to any upcoming events yet." action_url=discover_events_url action_label="Browse Events" action_icon="fa-solid fa-compass" %}
+        {% endif %}
       </div>
 
       <div id="subcontent-rsvps-past" class="subtab-content d-none">
@@ -149,14 +144,13 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
           {% for rsvp in rsvps_past %}
           <div class="col">
-            {% include 'events/partials/event_card.html' with event=rsvp.event
-            rsvp=rsvp %}
+            {% include 'events/partials/event_card.html' with event=rsvp.event rsvp=rsvp %}
           </div>
           {% endfor %}
         </div>
-        {% else %} {% include 'events/partials/empty_state.html' with title="No
-        Past Events" description="You haven't attended any events." %} {% endif
-        %}
+        {% else %}
+          {% include 'events/partials/empty_state.html' with title="No Past Events" description="You haven't attended any events." %}
+        {% endif %}
       </div>
     </div>
 
@@ -199,16 +193,14 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
           {% for event in created_upcoming %}
           <div class="col">
-            {% include 'events/partials/event_card.html' with event=event
-            is_organizer=True %}
+            {% include 'events/partials/event_card.html' with event=event is_organizer=True %}
           </div>
           {% endfor %}
         </div>
-        {% else %} {% url 'create_event' as create_event_url %} {% include
-        'events/partials/empty_state.html' with title="No Upcoming Events"
-        description="You haven't created any upcoming events."
-        action_url=create_event_url action_label="Create Event"
-        action_icon="fa-solid fa-plus" %} {% endif %}
+        {% else %}
+          {% url 'create_event' as create_event_url %}
+          {% include 'events/partials/empty_state.html' with title="No Upcoming Events" description="You haven't created any upcoming events." action_url=create_event_url action_label="Create Event" action_icon="fa-solid fa-plus" %}
+        {% endif %}
       </div>
 
       <div id="subcontent-created-past" class="subtab-content d-none">
@@ -216,14 +208,13 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
           {% for event in created_past %}
           <div class="col">
-            {% include 'events/partials/event_card.html' with event=event
-            is_organizer=True %}
+            {% include 'events/partials/event_card.html' with event=event is_organizer=True %}
           </div>
           {% endfor %}
         </div>
-        {% else %} {% include 'events/partials/empty_state.html' with title="No
-        Past Events" description="You haven't created any events yet." %} {%
-        endif %}
+        {% else %}
+          {% include 'events/partials/empty_state.html' with title="No Past Events" description="You haven't created any events yet." %}
+        {% endif %}
       </div>
     </div>
   </div>

@@ -8,10 +8,9 @@
     <div class="card-body p-4">
       <h1 class="h2 fw-bold mb-4">Edit Event</h1>
 
-      {% url 'edit_event' event.id as edit_event_url %} {% url 'event_detail'
-      event.id as cancel_edit_event_url %} {% include
-      'events/partials/event_form.html' with form_action=edit_event_url
-      submit_label='Edit' cancel_url=cancel_edit_event_url form_mode='edit' %}
+      {% url 'edit_event' event.id as edit_event_url %}
+      {% url 'event_detail' event.id as cancel_edit_event_url %}
+      {% include 'events/partials/event_form.html' with form_action=edit_event_url submit_label='Edit' cancel_url=cancel_edit_event_url form_mode='edit' %}
     </div>
   </div>
 </div>

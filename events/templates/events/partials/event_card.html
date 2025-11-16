@@ -72,14 +72,12 @@
         >{{ event.title }}</a
       >
     </h5>
-    {% with organizer_name=event.created_by.name location_classes='text-muted
-    text-truncate d-inline-block' %} {% if organizer_name %} {% include
-    'events/partials/event_meta_list.html' with event=event
-    organizer_summary=organizer_name primary_organizer_name=organizer_name
-    compact=True location_classes=location_classes location_style=location_style
-    %} {% else %} {% include 'events/partials/event_meta_list.html' with
-    event=event primary_organizer_name=organizer_name compact=True
-    location_classes=location_classes location_style=location_style %} {% endif
-    %} {% endwith %}
+    {% with organizer_name=event.created_by.name location_classes='text-muted text-truncate d-inline-block' %}
+      {% if organizer_name %}
+        {% include 'events/partials/event_meta_list.html' with event=event organizer_summary=organizer_name primary_organizer_name=organizer_name compact=True location_classes=location_classes location_style=location_style %}
+      {% else %}
+        {% include 'events/partials/event_meta_list.html' with event=event primary_organizer_name=organizer_name compact=True location_classes=location_classes location_style=location_style %}
+      {% endif %}
+    {% endwith %}
   </div>
 </article>

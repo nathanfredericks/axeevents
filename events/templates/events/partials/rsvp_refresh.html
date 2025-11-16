@@ -1,16 +1,14 @@
-{% with mobile_id=mobile_container_id desktop_id=desktop_container_id %} {% if
-primary_container == mobile_id %} {% include 'events/partials/rsvp_form.html'
-with form_id=mobile_form_id wrapper_classes=mobile_wrapper
-container_id=mobile_id %} {% else %} {% include 'events/partials/rsvp_form.html'
-with form_id=desktop_form_id wrapper_classes=desktop_wrapper
-container_id=desktop_id %} {% endif %}
+{% with mobile_id=mobile_container_id desktop_id=desktop_container_id %}
+  {% if primary_container == mobile_id %}
+    {% include 'events/partials/rsvp_form.html' with form_id=mobile_form_id wrapper_classes=mobile_wrapper container_id=mobile_id %}
+  {% else %}
+    {% include 'events/partials/rsvp_form.html' with form_id=desktop_form_id wrapper_classes=desktop_wrapper container_id=desktop_id %}
+  {% endif %}
 <div id="{{ mobile_id }}" hx-swap-oob="innerHTML">
-  {% include 'events/partials/rsvp_form.html' with form_id=mobile_form_id
-  wrapper_classes=mobile_wrapper container_id=mobile_id %}
+  {% include 'events/partials/rsvp_form.html' with form_id=mobile_form_id wrapper_classes=mobile_wrapper container_id=mobile_id %}
 </div>
 <div id="{{ desktop_id }}" hx-swap-oob="innerHTML">
-  {% include 'events/partials/rsvp_form.html' with form_id=desktop_form_id
-  wrapper_classes=desktop_wrapper container_id=desktop_id %}
+  {% include 'events/partials/rsvp_form.html' with form_id=desktop_form_id wrapper_classes=desktop_wrapper container_id=desktop_id %}
 </div>
 <div id="questionnaire-modal-container" hx-swap-oob="innerHTML">
   {% include 'events/partials/questionnaire_modal.html' %}

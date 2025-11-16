@@ -20,12 +20,7 @@
           class="form-check-input question-input"
           id="question_required_{{ row.index }}"
           name="question_required_{{ row.index }}"
-          {%
-          if
-          row.required
-          %}checked{%
-          endif
-          %}
+          {% if row.required %}checked{% endif %}
           data-question-required
         />
         <label class="form-check-label" for="question_required_{{ row.index }}"

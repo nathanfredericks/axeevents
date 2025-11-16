@@ -16,13 +16,7 @@ event. {% endcomment %}
       id="cover_photo"
       accept="image/*"
       class="form-control"
-      {%
-      if
-      form_mode=""
-      ="create"
-      %}required{%
-      endif
-      %}
+      {% if form_mode == "create" %}required{% endif %}
     />
     {% if form_mode == 'edit' %}
     <div class="form-text">Leave blank to keep your current cover photo.</div>
@@ -106,13 +100,7 @@ event. {% endcomment %}
       %} {% for tz in timezones %}
       <option
         value="{{ tz.value }}"
-        {%
-        if
-        tz.value=""
-        ="selected_timezone"
-        %}selected{%
-        endif
-        %}
+        {% if tz.value == selected_timezone %}selected{% endif %}
       >
         {{ tz.label }}
       </option>
@@ -145,12 +133,7 @@ event. {% endcomment %}
         class="form-check-input"
         id="unlimited_attendees"
         name="unlimited_attendees"
-        {%
-        if
-        unlimited_attendees
-        %}checked{%
-        endif
-        %}
+        {% if unlimited_attendees %}checked{% endif %}
       />
       <label class="form-check-label" for="unlimited_attendees"
         >Unlimited attendees</label
@@ -180,39 +163,15 @@ event. {% endcomment %}
         class="form-check-input"
         id="allow_rsvp"
         name="allow_rsvp"
-        {%
-        if
-        request.POST
-        %}
-        {%
-        if
-        request.POST.allow_rsvp
-        %}checked{%
-        endif
-        %}
-        {%
-        else
-        %}
-        {%
-        if
-        event
-        %}
-        {%
-        if
-        event.allow_rsvp
-        %}checked{%
-        endif
-        %}
-        {%
-        else
-        %}
-        checked
-        {%
-        endif
-        %}
-        {%
-        endif
-        %}
+        {% if request.POST %}
+          {% if request.POST.allow_rsvp %}checked{% endif %}
+        {% else %}
+          {% if event %}
+            {% if event.allow_rsvp %}checked{% endif %}
+          {% else %}
+            checked
+          {% endif %}
+        {% endif %}
       />
       <label class="form-check-label" for="allow_rsvp"
         >Allow attendees to RSVP</label
@@ -225,39 +184,15 @@ event. {% endcomment %}
         class="form-check-input"
         id="allow_maybe_rsvp"
         name="allow_maybe_rsvp"
-        {%
-        if
-        request.POST
-        %}
-        {%
-        if
-        request.POST.allow_maybe_rsvp
-        %}checked{%
-        endif
-        %}
-        {%
-        else
-        %}
-        {%
-        if
-        event
-        %}
-        {%
-        if
-        event.allow_maybe_rsvp
-        %}checked{%
-        endif
-        %}
-        {%
-        else
-        %}
-        checked
-        {%
-        endif
-        %}
-        {%
-        endif
-        %}
+        {% if request.POST %}
+          {% if request.POST.allow_maybe_rsvp %}checked{% endif %}
+        {% else %}
+          {% if event %}
+            {% if event.allow_maybe_rsvp %}checked{% endif %}
+          {% else %}
+            checked
+          {% endif %}
+        {% endif %}
       />
       <label class="form-check-label" for="allow_maybe_rsvp"
         >Allow "Maybe" RSVP option</label
@@ -270,26 +205,11 @@ event. {% endcomment %}
         name="hide_attendee_count"
         id="hide_attendee_count"
         class="form-check-input"
-        {%
-        if
-        request.POST
-        %}
-        {%
-        if
-        request.POST.hide_attendee_count
-        %}checked{%
-        endif
-        %}
-        {%
-        elif
-        event
-        and
-        event.hide_attendee_count
-        %}
-        checked
-        {%
-        endif
-        %}
+        {% if request.POST %}
+          {% if request.POST.hide_attendee_count %}checked{% endif %}
+        {% elif event and event.hide_attendee_count %}
+          checked
+        {% endif %}
       />
       <label class="form-check-label" for="hide_attendee_count">
         Hide attendee count from attendees
@@ -317,8 +237,9 @@ event. {% endcomment %}
         class="questionnaire-rows"
         data-max="{{ question_slots }}"
       >
-        {% for row in question_rows %} {% include
-        'events/partials/question_row.html' %} {% endfor %}
+        {% for row in question_rows %}
+          {% include 'events/partials/question_row.html' %}
+        {% endfor %}
       </div>
     </div>
   </div>
@@ -331,39 +252,15 @@ event. {% endcomment %}
         class="form-check-input"
         id="is_listed"
         name="is_listed"
-        {%
-        if
-        request.POST
-        %}
-        {%
-        if
-        request.POST.is_listed
-        %}checked{%
-        endif
-        %}
-        {%
-        else
-        %}
-        {%
-        if
-        event
-        %}
-        {%
-        if
-        event.is_listed
-        %}checked{%
-        endif
-        %}
-        {%
-        else
-        %}
-        checked
-        {%
-        endif
-        %}
-        {%
-        endif
-        %}
+        {% if request.POST %}
+          {% if request.POST.is_listed %}checked{% endif %}
+        {% else %}
+          {% if event %}
+            {% if event.is_listed %}checked{% endif %}
+          {% else %}
+            checked
+          {% endif %}
+        {% endif %}
       />
       <label class="form-check-label" for="is_listed">
         Show on discover page
@@ -376,36 +273,13 @@ event. {% endcomment %}
         class="form-check-input"
         id="auto_reminders_enabled"
         name="auto_reminders_enabled"
-        {%
-        if
-        request.POST
-        %}
-        {%
-        if
-        request.POST.auto_reminders_enabled
-        %}checked{%
-        endif
-        %}
-        {%
-        elif
-        event
-        and
-        event.auto_reminders_enabled
-        %}
-        checked
-        {%
-        else
-        %}
-        {%
-        if
-        form_mode=""
-        ="create"
-        %}checked{%
-        endif
-        %}
-        {%
-        endif
-        %}
+        {% if request.POST %}
+          {% if request.POST.auto_reminders_enabled %}checked{% endif %}
+        {% elif event and event.auto_reminders_enabled %}
+          checked
+        {% else %}
+          {% if form_mode == "create" %}checked{% endif %}
+        {% endif %}
       />
       <label class="form-check-label" for="auto_reminders_enabled"
         >Send automatic SMS reminders</label
