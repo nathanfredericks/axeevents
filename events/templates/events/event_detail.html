@@ -1,7 +1,12 @@
-{% extends 'base.html' %} {% load format_extras %} {% block title %}{{
-event.title }} - {{ PLATFORM_NAME }}{% endblock %} {% block content %} {% if
-event.cover_photo_processing_status == 'pending' or
-event.cover_photo_processing_status == 'processing' %}
+{% extends 'base.html' %}
+
+{% load format_extras %}
+
+{% block title %}{{ event.title }} - {{ PLATFORM_NAME }}{% endblock %}
+
+{% block content %}
+
+{% if event.cover_photo_processing_status == 'pending' or event.cover_photo_processing_status == 'processing' %}
 <section class="d-lg-none mb-4" aria-labelledby="mobile-cover-photo-heading">
   <h2 class="visually-hidden" id="mobile-cover-photo-heading">
     Event cover photo

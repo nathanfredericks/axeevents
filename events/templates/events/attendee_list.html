@@ -1,5 +1,10 @@
-{% extends 'base.html' %} {% load format_extras %} {% block title %}Attendees -
-{{ event.title }}{% endblock %} {% block content %}
+{% extends 'base.html' %}
+
+{% load format_extras %}
+
+{% block title %}Attendees - {{ event.title }}{% endblock %}
+
+{% block content %}
 <style>
   .attendee-container {
     max-width: 1100px;
