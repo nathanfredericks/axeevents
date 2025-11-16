@@ -665,12 +665,19 @@
       function checkStatus() {
           attempts++;
 
-          fetch(statusUrl)
+          fetch(statusUrl, {
+              cache: 'no-cache',
+              headers: {
+                  'Cache-Control': 'no-cache',
+                  'Pragma': 'no-cache'
+              }
+          })
               .then(response => response.json())
               .then(data => {
                   if (data.status === 'completed' && (data.avif_url || data.webp_url || data.original_url)) {
                       clearInterval(pollInterval);
-                      window.location.reload();
+                      // Force a hard reload to bypass browser cache
+                      window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
                   } else if (attempts >= maxAttempts) {
                       clearInterval(pollInterval);
                       console.log('Cover photo processing timed out');

@@ -73,15 +73,15 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      # - .:/app
-      # - /app/.venv
+      - .:/app
+      - /app/.venv
       - media:/app/media
     env_file:
       - .env
     ports:
       - "8000:8000"
-    entrypoint: /usr/local/bin/docker-entrypoint-prod.sh
-    # entrypoint: /usr/local/bin/docker-entrypoint.sh
+    # entrypoint: /usr/local/bin/docker-entrypoint-prod.sh
+    entrypoint: /usr/local/bin/docker-entrypoint.sh
     restart: always
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/" ]
